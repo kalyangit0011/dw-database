@@ -12,6 +12,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<db:select doc:name="Select" doc:id="bd79cbf2-4d5c-4091-b480-6ad91df974ce" config-ref="Database_Config">
 			<db:sql ><![CDATA[SELECT * FROM employee]]></db:sql>
 		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="4938be22-52b1-4e16-a391-4b7237f40680" />
 		<ee:transform doc:name="Transform Message" doc:id="7e976fb9-6e17-432c-b71a-b199530d5567" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
