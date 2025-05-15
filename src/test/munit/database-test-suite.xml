@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="database-test-suite.xml" />
+	<munit:test name="create-employee-test-suiteTest" doc:id="95b86085-9223-4b3b-89ca-53761f8fbfe4" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b12ff1a8-796b-42a3-85a5-a3b656145f70" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="5dc7e2ba-b712-4475-91be-6569ed19073b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('dbInsertResponce.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="56884f54-114c-489f-b16e-438834897d3a" >
+				<munit:payload value="#[MunitTools::getResourceAsString('createInputRequest.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="66f9ed73-114d-4e6f-bc42-f3beb0b8c6a1" name="create-employee"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6fe5643d-1a18-4a67-ae7c-7ff8f948ccf6" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-employees-test-suiteTest" doc:id="a2fa6d9f-2f66-47c4-b94b-2a597c5a2c69" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="34f166bc-4860-4526-96ad-016a11d6e76a" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="bd79cbf2-4d5c-4091-b480-6ad91df974ce" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('getEmployeesDbResponce.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="5b66ef9e-391b-468e-8f54-40ed49c14d28" />
+			<flow-ref doc:name="Flow Reference" doc:id="f6bb801c-8c35-4d66-a665-f98383e33acd" name="get-employeeFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a6a280ce-4570-4dd2-88fd-8ab6955c0110" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-single-employee-test-suiteTest" doc:id="e2e6bd8f-e3f2-49c8-8a65-5de4d03c32e5" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="694cad4b-71a5-435a-88f8-c880cb513f0d" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="1f5fb71e-9d15-424c-8314-f0065460c119" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('getSingleEmployeeSelectResponse.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9ce54a09-823f-4896-afe8-f7b321727cd8" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="99223999-cd4c-4ecc-b6ac-65356d8d1498" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('getSingleEmployeeInsertResponse.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="5b46597f-b9b7-407b-868a-777c0e3dd173" >
+				<munit:attributes value="#[MunitTools::getResourceAsString('getSingleEmployeeInputRequest.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Reference" doc:id="7b05b16d-0fc9-4988-8b92-9837b503311a" name="get-single-employeeFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="54651aba-30a7-442f-b1dc-d796e0fdf368" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

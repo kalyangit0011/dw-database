@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="get-employees-test-suite.xml" />
+	<munit:test name="get-employees-test-suite-get-employeeFlowTest" doc:id="3ef96c55-01a9-4af3-b5b9-dbfb276aec00" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get-employeeFlow" doc:id="e180d35d-5519-4fa3-9d9a-658a6ba01a0d" name="get-employeeFlow"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

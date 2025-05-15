@@ -1,0 +1,26 @@
+%dw 2.0
+
+type auto_367f1c47_4889_457a_b0cb_befae9002d4f_Output_Payload = {|
+  "0": org_mule_runtime_api_message_Message {"typeId": "org.mule.runtime.api.message.Message"}, 
+  "1": org_mule_runtime_api_message_Message_5 {"typeId": "org.mule.runtime.api.message.Message"}
+|} | String
+type org_mule_runtime_api_message_Message_5 = {|
+  payload: {|
+    employeeId: Number | Null, 
+    employeeName: String | Null, 
+    employeeStatus: String | Null
+  |}, 
+  attributes: Null
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+
+
+type org_mule_runtime_api_message_Message = {|
+  payload: {|
+    status: Number, 
+    message: String
+  |}, 
+  attributes: Null
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+
+
+

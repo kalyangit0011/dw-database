@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="common-error-handlerError_Handler" doc:id="ed35c1e3-bf06-4f94-bbb7-5fd266b87df4" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7feff476-aca3-476c-96a6-13e9c6b2d8c6" type="DB:CONNECTIVITY">
+			<logger level="INFO" doc:name="Logger" doc:id="cf8c52ef-1052-4a07-b97e-ac5196254c81" />
+			<ee:transform doc:name="Transform Message" doc:id="ce9cd92c-0af3-4853-8c87-53bc48c9fc2d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error description": error.detailedDescription,
+	"errorType": error.errorType,
+	"errorCause": error.cause,
+	"errorMessage": error.errorMessage
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5dfedc95-9a99-429c-9149-56c9cd9afd77" type="DB:BAD_SQL_SYNTAX">
+			<logger level="INFO" doc:name="Logger" doc:id="aa07f821-7363-437a-a8b3-c7ba57503f6e" />
+			<ee:transform doc:name="Transform Message" doc:id="6ba08be1-bd3b-4ff8-a8ed-613f7c6e2b17" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error description": error.detailedDescription,
+	"errorType": error.errorType,
+	"errorCause": error.cause,
+	"errorMessage": error.errorMessage
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="90fc09fb-89d7-4004-ab09-75daa98f6841" type="FILE:CONNECTIVITY">
+			<logger level="INFO" doc:name="Logger" doc:id="2d406a82-01da-4f7e-a719-549887b6f3be" />
+			<ee:transform doc:name="Transform Message" doc:id="e56a2d2f-ad9f-4908-92b4-5419420b960a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error description": error.detailedDescription,
+	"errorType": error.errorType,
+	"errorCause": error.cause,
+	"errorMessage": error.errorMessage
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ad46de1d-5695-4e04-be30-9fa6a2f7a642" type="FILE:ACCESS_DENIED">
+			<logger level="INFO" doc:name="Logger" doc:id="648ae09b-2c85-4ef3-bd1e-a423c90750bd" />
+			<ee:transform doc:name="Transform Message" doc:id="29b4b3e3-2b34-49ac-bc6c-05b5007816dc" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error description": error.detailedDescription,
+	"errorType": error.errorType,
+	"errorCause": error.cause,
+	"errorMessage": error.errorMessage
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9a147659-fdee-4fb6-beb0-19380188dfd6" type="ANY">
+			<logger level="INFO" doc:name="Logger" doc:id="cf8709bc-84f4-4578-b138-513682065942" />
+			<ee:transform doc:name="Transform Message" doc:id="034fbf4e-6ae6-4340-b57a-59adb3542695" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"error description": error.detailedDescription,
+	"errorType": error.errorType,
+	"errorCause": error.cause,
+	"errorMessage": error.errorMessage
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

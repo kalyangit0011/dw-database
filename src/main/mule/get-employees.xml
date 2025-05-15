@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-employeeFlow" doc:id="f2cd91a3-eb11-460a-b411-58dfe590f852" >
+		<http:listener doc:name="Listener" doc:id="b8ddb498-a06a-4a9d-be68-c6c96dc4aab0" config-ref="HTTP_Listener_config" path="/get-employees"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c79372ec-e0d2-4e03-8203-bada5d0d4218" message="flow-start"/>
+		<db:select doc:name="Select" doc:id="bd79cbf2-4d5c-4091-b480-6ad91df974ce" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM employee]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="7e976fb9-6e17-432c-b71a-b199530d5567" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item, index)->{
+	"employeeID": item.EMP_ID,
+	"employeeName": item.EMP_NAME,
+	"employeeStatus": item.EMP_STATUS
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="efdad78f-cb55-474a-ba41-de79f53ac1ca" message="#[payload]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="28032b99-bdd6-4e5d-9811-54efb9c24127" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="7e9af171-a71f-46a0-a4da-5a43f2434a0b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

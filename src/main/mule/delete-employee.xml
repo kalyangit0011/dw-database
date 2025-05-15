@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="delete-employeeFlow" doc:id="45403085-bde1-4b77-b85c-19a3ded4560f" >
+		<http:listener doc:name="Listener" doc:id="4b920eab-56ce-4026-b97c-933425fca0b4" config-ref="HTTP_Listener_config" path="/delete-employee/{employeeId}" allowedMethods="DELETE"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8f939a27-d658-4882-8753-18d9b81e8241" message="delete-flow-start"/>
+		<!-- [STUDIO:"Stored procedure"]<db:stored-procedure doc:name="Stored procedure" doc:id="a7b905d0-49b0-4126-a5bb-9fb1ca6d9565" config-ref="Database_Config">
+			<db:sql ><![CDATA[{call delete_employee(:empId, :empName)}&#93;&#93;></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empId: attributes.uriParams.employeeId,
+	empName: attributes.uriParams.employeeName
+	
+}&#93;&#93;&#93;></db:input-parameters>
+		</db:stored-procedure> [STUDIO] -->
+		<db:delete doc:name="Delete" doc:id="152f7b75-9034-4fa7-9d95-2c2fb40c93d6" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from employee where emp_id= :empId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empId: attributes.uriParams.employeeId
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="2a0d685b-7a60-4f69-92d7-a04cd5a7e3fe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "delete record"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="32d34cb4-ed54-4593-ba85-a0108a44b577" message="delete-flow-end"/>
+	</flow>
+</mule>

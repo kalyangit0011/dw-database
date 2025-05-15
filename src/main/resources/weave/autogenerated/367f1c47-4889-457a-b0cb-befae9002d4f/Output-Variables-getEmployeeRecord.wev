@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_367f1c47_4889_457a_b0cb_befae9002d4f_Output_Variables_getEmployeeRecord = Array<{|  EMP_ID?: Number,   EMP_NAME?: String,   EMP_STATUS?: String|}>
+
