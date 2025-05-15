@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="fa9aaa5a-401f-4271-b683-b98316ede56c" />
+	<flow name="get-single-employeeFlow" doc:id="367f1c47-4889-457a-b0cb-befae9002d4f" >
+		<http:listener doc:name="Listener" doc:id="e8d6f697-2353-4d7d-8925-0620a043428f" config-ref="HTTP_Listener_config" path="get-single-employee">
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="019ff362-1fb1-4da2-a869-deb3f56c03aa" message="main-flow-start"/>
+		<db:select doc:name="Select" doc:id="1f5fb71e-9d15-424c-8314-f0065460c119" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employee where emp_id=:empId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empId: attributes.queryParams.employeeId
+}]]]></db:input-parameters>
+		</db:select>
+		<set-variable value="#[payload]" doc:name="getEmployeeRecord" doc:id="09d117ca-deec-4072-9185-5c716956ab09" variableName="getEmployeeRecord"/>
+		<ee:transform doc:name="Transform Message" doc:id="a9b01f2c-bfb4-4456-99db-db4448c371b4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.getEmployeeRecord]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="d9a3e9b1-5c5b-4f89-87ea-9763ea42f64e" >
+			<when expression="#[sizeOf(payload)==1]">
+				<scatter-gather doc:name="Scatter-Gather" doc:id="5b622424-f3d6-472f-815a-c56ced81bf38">
+			<route>
+				<logger level="INFO" doc:name="Logger" doc:id="2083709b-17c0-4eb3-a011-4dbb280a8e1b" message="emp-flow-start"/>
+						<db:insert doc:name="Insert" doc:id="99223999-cd4c-4ecc-b6ac-65356d8d1498" config-ref="Database_Config">
+							<db:sql ><![CDATA[insert into emp(emp_id, emp_name, emp_status) values (:empId, :empName, :empStatus)]]></db:sql>
+							<db:input-parameters ><![CDATA[#[{
+	"empId": payload[0].EMP_ID,
+	"empName": payload[0].EMP_NAME,
+	"empStatus": payload[0].EMP_STATUS
+}]]]></db:input-parameters>
+						</db:insert>
+						<ee:transform doc:name="Transform Message" doc:id="53f246a4-47e6-41fd-8a56-3b4ed6acf928" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status": 201,
+	"message": "employee record created successfully"
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="5f3cfded-299b-4b22-9c5b-6a3d90ca17da" message="emp-flow-end"/>
+			</route>
+			<route>
+				<logger level="INFO" doc:name="Logger" doc:id="cf3bbf9d-3d06-4472-a4b9-3f777311eb04" message="file-flow-start"/>
+						<ee:transform doc:name="Transform Message" doc:id="079d62a4-0f9d-4217-aeb9-0d7d4de0382e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"employeeId": payload[0].EMP_ID,
+	"employeeName": payload[0].EMP_NAME,
+	"employeeStatus": payload[0].EMP_STATUS
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+						<file:write doc:name="Write" doc:id="7ad54e8c-9fa0-44d4-8902-a4fdea87c582" config-ref="File_Config" path="D:\venu-mule traimning\file\database-scatterGather"/>
+						<set-payload value="#[payload]" doc:name="Set Payload" doc:id="85440dd5-2c38-4b2a-8c72-334eb13c4d68" />
+						<logger level="INFO" doc:name="Logger" doc:id="2394ae47-baaa-4871-b8db-6e3af8870c38" message="file-flow-end"/>
+			</route>
+		</scatter-gather>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="5379cc6d-804a-4af2-b55a-01144ef30f01" message="default-flow-start"/>
+				<set-payload value='#["no record found"]' doc:name="Set Payload" doc:id="7e012741-7a2a-443c-b0f4-5327242d2e62" />
+				<logger level="INFO" doc:name="Logger" doc:id="36a039ad-f68c-44c8-85a3-a9edc11409b8" message="default-flow-end"/>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="b7efdbfa-c05b-417a-ba4d-4969baf8a7c1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="fa5180cd-c714-4778-9233-c618332f875b" message="main-flow-end"/>
+		<error-handler ref="common-error-handlerError_Handler" />
+	</flow>
+</mule>
